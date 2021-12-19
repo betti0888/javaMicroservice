@@ -1,0 +1,31 @@
+version: "3.8"
+
+services:
+  database:
+    image: postgres:10.5
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    volumes:
+      - database-data:/var/lib/postgresql/data/
+    ports:
+      - "54322:5432"
+  
+  book-application:
+    image: hu.microservice.book/book-application:0.0.1-SNAPSHOT
+    environment:
+      SPRING_DATASOURCE_URL: "jdbc:postgresql://database/${DB_NAME}"
+      SPRING_DATASOURCE_TYPE: "org.apache.tomcat.jdbc.pool.DataSource"
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      SPRING_DATASOURCE_USERNAME: ${DB_USER}
+      SPRING_DATASOURCE_TOMCAT_MIN_IDLE: ${CONNECTION_POOL_MIN_SIZE}
+      SPRING_DATASOURCE_TOMCAT_MAX_IDLE: ${CONNECTION_POOL_MAX_SIZE}
+      SPRING_DATASOURCE_TOMCAT_INITIAL_SIZE: ${CONNECTION_POOL_MIN_SIZE}
+      SPRING_DATASOURCE_DRIVERCLASSNAME: "org.postgresql.Driver"
+      SPRING_JPA_DATABASEPLATFORM: "org.hibernate.dialect.PostgreSQL95Dialect"
+    ports:
+      - "8085:8080"
+    
+volumes:
+  database-data:
