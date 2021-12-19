@@ -11,7 +11,7 @@ services:
       - database-data:/var/lib/postgresql/data/
     ports:
       - "54322:5432"
-  
+ 
   book-application:
     image: hu.microservice.book/book-application:0.0.1-SNAPSHOT
     environment:
