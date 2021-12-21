@@ -27,6 +27,7 @@ public class UserEntity {
     private int age;
     private int sex;
     private Date registrationDate;
+    private String CreatedBy;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<RatingEntity> ratings = new HashSet<>();

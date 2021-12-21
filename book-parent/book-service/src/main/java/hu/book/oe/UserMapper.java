@@ -13,6 +13,7 @@ public class UserMapper {
         dto.setLocation(entity.getLocation());
         dto.setRegistrationDate(entity.getRegistrationDate());
         dto.setSex(entity.getSex());
+        dto.setCreatedBy(entity.getCreatedBy());
         return dto;
     }
 

@@ -13,5 +13,6 @@ public class User {
     private int age;
     private int sex;
     private Date registrationDate;
+    private String CreatedBy;
 
 }
