@@ -11,7 +11,34 @@ services:
       - database-data:/var/lib/postgresql/data/
     ports:
       - "54322:5432"
- 
+   
+  keycloak:
+    image: "jboss/keycloak:15.0.2"
+    environment:
+      KEYCLOAK_USER: "keycloak"
+      KEYCLOAK_PASSWORD: ${KEYCLOAK_PASSWORD}
+      DB_VENDOR: "postgres"
+      DB_ADDR: "keycloak-database"
+      DB_USER: "keycloak"
+      DB_PASSWORD: ${KEYCLOAK_DB_PASSWORD}
+      DB_DATABASE: "keycloak"
+      KEYCLOAK_FRONTEND_URL: "http://localhost:8088/auth"
+    ports:
+      - "8088:8080"
+  keycloak-database:
+    image: "postgres:13.2-alpine"
+    environment:
+      POSTGRES_USER: "keycloak"
+      POSTGRES_DB: "keycloak"
+      POSTGRES_PASSWORD: ${KEYCLOAK_DB_PASSWORD}
+    volumes:
+      - "keycloak_data:/var/lib/postgresql/data"
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints: [node.role == manager]
+    
   book-application:
     image: hu.microservice.book/book-application:0.0.1-SNAPSHOT
     environment:
@@ -24,8 +51,14 @@ services:
       SPRING_DATASOURCE_TOMCAT_INITIAL_SIZE: ${CONNECTION_POOL_MIN_SIZE}
       SPRING_DATASOURCE_DRIVERCLASSNAME: "org.postgresql.Driver"
       SPRING_JPA_DATABASEPLATFORM: "org.hibernate.dialect.PostgreSQL95Dialect"
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER-URI: ${OAUTH2_JWT_ISSUER_URI}
+      BOOK_WEB_SECURITY_ENABLED: "true"
+      BOOK_WEB_SECURITY_JWKS_URI: ${OAUTH2_JWKS_URI}
+      BOOK_PROJECT_USER_URL: "http://user-service:8080"
+      
     ports:
       - "8085:8080"
     
 volumes:
+  keycloak_data:
   database-data:
